@@ -1,0 +1,29 @@
+<!-- Layout & Navigation -->
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<!-- Equipment Detail Section -->
+<div class="card">
+
+    <!-- Header -->
+  <div class="card-header">
+    <h2><%= item.name %></h2>
+  </div>
+
+  <%# --- Body Content --- %>
+  <div class="card-body">
+    <p><b>รหัส:</b> <%= item.code %></p>
+    <p><b>ประเภท:</b> <%= item.category %></p>
+    <p><b>สถานะ:</b> <%= item.status %></p>
+
+    <!-- Action Buttons -->
+    <a href="/equipment/<%= item.equipment_id %>/edit" class="btn btn-primary">แก้ไข</a>
+
+    <form class="d-inline" method="post" action="/equipment/<%= item.equipment_id %>/delete" onsubmit="return confirm('ยืนยันการลบ?')">
+      <button type="submit" class="btn btn-danger">ลบ</button>
+    </form>
+  </div>
+</div>
+
+<!-- Footer -->
+<%- include('../partials/footer') %>

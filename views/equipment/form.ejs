@@ -1,0 +1,42 @@
+<!-- Layout & Navigation -->
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<!-- Page Header -->
+<h2 class="mb-3"><%= title %></h2>
+
+<!-- Equipment Form Section -->
+<div class="card">
+  <div class="card-body">
+
+    <!-- Alert Messages -->
+    <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <!-- Equipment Form -->
+    <form method="post" action="<%= action %>">
+      <div class="mb-3">
+        <label class="form-label">รหัสอุปกรณ์</label>
+        <input class="form-control" name="code" required value="<%= item.code || '' %>">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">ชื่ออุปกรณ์</label>
+        <input class="form-control" name="name" required value="<%= item.name || '' %>">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">ประเภท</label>
+        <input class="form-control" name="category" required value="<%= item.category || '' %>">
+      </div>
+
+      <!-- Form Actions -->
+      <button type="submit" class="btn btn-primary">บันทึก</button>
+      <a href="/equipment" class="btn">ยกเลิก</a>
+    </form>
+  </div>
+</div>
+
+<!-- Footer -->
+<%- include('../partials/footer') %>
