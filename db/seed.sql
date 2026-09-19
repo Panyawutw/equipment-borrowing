@@ -45,3 +45,20 @@ VALUES
     ('TB-001', 'iPad 10th Gen', 'Tablet'),
     ('TB-002', 'Samsung Galaxy Tab', 'Tablet'),
     ('SP-001', 'Portable Speaker', 'Audio');
+
+-- การเพิ่มข้อมูลเริ่มต้นในตาราง borrowings
+INSERT INTO
+    borrowings (student_id, equipment_id, due_at, status)
+VALUES
+    (
+        '66010001',
+        1,
+        NOW () + INTERVAL '7 days',
+        'BORROWED'
+    ),
+    (
+        '66010002',
+        3,
+        NOW () + INTERVAL '3 days',
+        'BORROWED'
+    );
