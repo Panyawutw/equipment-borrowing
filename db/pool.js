@@ -1,3 +1,4 @@
+// --- Database Configuration ---
 const { Pool } = require("pg");
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -6,7 +7,11 @@ const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
 });
+
+// --- Event Listeners ---
 pool.on("error", (err) => {
   console.error("Unexpected PostgreSQL error", err);
 });
+
+// --- Export Module ---
 module.exports = pool;
