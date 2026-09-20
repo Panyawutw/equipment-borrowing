@@ -1,8 +1,18 @@
 /* --- Global & Layout Styles --- */
 
 /* พื้นหลังหลักของเว็บไซต์ */
-body { 
-  background: #f4f7fb; 
+body {
+  font-family: 'Inter', 
+  -apple-system, BlinkMacSystemFont, 
+  San Francisco, 
+  Segoe UI, 
+  Roboto, 
+  Helvetica Neue, 
+  sans-serif;
+}
+
+.table img {
+  border-radius: 4px;
 }
 
 /* แบรนด์/โลโก้บน แถบเมนูนำทาง */
