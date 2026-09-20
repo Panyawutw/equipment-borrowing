@@ -20,10 +20,10 @@ exports.findById = async (id) => {
 };
 
 // เพิ่มอุปกรณ์ใหม่
-exports.create = async ({ code, name, category }) => {
-  const sql = `INSERT INTO equipment (code, name, category)
-  VALUES ($1, $2, $3) RETURNING *`;
-  const { rows } = await pool.query(sql, [code, name, category]);
+exports.create = async ({ code, name, category, image_path }) => {
+  const sql = `INSERT INTO equipment (code, name, category, image_path)
+  VALUES ($1, $2, $3, $4) RETURNING *`;
+  const { rows } = await pool.query(sql, [code, name, category, image_path]);
   return rows[0];
 };
 
