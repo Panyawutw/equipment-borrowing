@@ -2,39 +2,67 @@
 <%- include('../partials/head') %>
 <%- include('../partials/navbar') %>
 
-<!-- Page Header -->
-<h2 class="mb-3"><%= title %></h2>
+<!-- Main Form Container -->
+<div class="container my-4" style="max-width: 600px;">
+  <div class="card">
+    
+    <%# --- Card Header --- %>
+    <div class="card-header">
+      <h3 class="card-title"><%= title %></h3>
+    </div>
 
-<!-- Equipment Form Section -->
-<div class="card">
-  <div class="card-body">
+    <%# --- Card Body & Form --- %>
+    <div class="card-body">
+      
+      <%# Error Message Alert %>
+      <% if (error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+      <% } %>
 
-    <!-- Alert Messages -->
-    <% if (error) { %>
-      <div class="alert alert-danger"><%= error %></div>
-    <% } %>
+      <!-- Equipment Form -->
+      <form action="<%= action %>" method="POST" enctype="multipart/form-data">
+        
+        <!-- Code Field -->
+        <div class="mb-3">
+          <label class="form-label required">รหัสอุปกรณ์ (Code)</label>
+          <input type="text" name="code" class="form-control" value="<%= item.code || '' %>" placeholder="เช่น NB-001" required>
+        </div>
 
-    <!-- Equipment Form -->
-    <form method="post" action="<%= action %>">
-      <div class="mb-3">
-        <label class="form-label">รหัสอุปกรณ์</label>
-        <input class="form-control" name="code" required value="<%= item.code || '' %>">
-      </div>
+        <!-- Name Field -->
+        <div class="mb-3">
+          <label class="form-label required">ชื่ออุปกรณ์</label>
+          <input type="text" name="name" class="form-control" value="<%= item.name || '' %>" placeholder="เช่น Notebook Lenovo" required>
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">ชื่ออุปกรณ์</label>
-        <input class="form-control" name="name" required value="<%= item.name || '' %>">
-      </div>
+        <!-- Category Field -->
+        <div class="mb-3">
+          <label class="form-label required">ประเภท (Category)</label>
+          <input type="text" name="category" class="form-control" value="<%= item.category || '' %>" placeholder="เช่น Computer, Camera" required>
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">ประเภท</label>
-        <input class="form-control" name="category" required value="<%= item.category || '' %>">
-      </div>
+        <!-- Image Upload & Preview Field -->
+        <div class="mb-3">
+          <label class="form-label">รูปภาพอุปกรณ์</label>
+          <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/webp">
+          
+          <%# Image Preview (Shows if image already exists) %>
+          <% if (item.image_path) { %>
+            <div class="mt-2">
+              <small class="text-muted">รูปภาพปัจจุบัน:</small><br>
+              <img src="<%= item.image_path %>" alt="preview" style="max-height: 100px;" class="rounded border mt-1">
+            </div>
+          <% } %>
+        </div>
 
-      <!-- Form Actions -->
-      <button type="submit" class="btn btn-primary">บันทึก</button>
-      <a href="/equipment" class="btn">ยกเลิก</a>
-    </form>
+        <!-- Form Action Buttons -->
+        <div class="d-flex justify-content-between">
+          <a href="/equipment" class="btn btn-secondary">ยกเลิก</a>
+          <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+        </div>
+        
+      </form>
+    </div>
+
   </div>
 </div>
 
