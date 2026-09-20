@@ -1,6 +1,13 @@
 // --- Imports & Helpers ---
 const Equipment = require("../models/equipment.model");
+const upload = require("../middleware/upload").single("image");
 const clean = (value) => String(value || "").trim();
+
+// Helper สำหรับเช็กว่า ID เป็นจำนวนเต็มบวกหรือไม่
+const isValidId = (id) => {
+  const num = Number(id);
+  return Number.isInteger(num) && num > 0;
+};
 
 // --- Equipment Controller Handlers ---
 
@@ -17,10 +24,18 @@ exports.list = async (req, res, next) => {
 // แสดงรายละเอียดอุปกรณ์ตาม ID
 exports.detail = async (req, res, next) => {
   try {
+    // 1. ตรวจสอบว่า ID เป็นจำนวนเต็มหรือไม่
+    if (!isValidId(req.params.id)) {
+      return res.status(400).render("errors/error", {
+        title: "ข้อมูลไม่ถูกต้อง (400)",
+        message: "รหัสอุปกรณ์ต้องเป็นตัวเลขจำนวนเต็มเท่านั้น",
+      });
+    }
+
     const item = await Equipment.findById(req.params.id);
     if (!item) {
       return res.status(404).render("errors/error", {
-        title: "ไม่พบข้อมูล",
+        title: "ไม่พบข้อมูล (404)",
         message: "ไม่พบอุปกรณ์ที่ระบุในระบบ",
       });
     }
@@ -49,6 +64,7 @@ exports.create = async (req, res, next) => {
     image_path: req.file ? `/uploads/${req.file.filename}` : null,
   };
 
+  // ตรวจสอบข้อมูลว่าง
   if (!item.code || !item.name || !item.category) {
     return res.status(400).render("equipment/form", {
       title: "เพิ่มอุปกรณ์",
@@ -62,11 +78,12 @@ exports.create = async (req, res, next) => {
     await Equipment.create(item);
     res.redirect("/equipment");
   } catch (err) {
+    // ดักจับรหัสซ้ำ (PostgreSQL Unique Violation: 23505)
     if (err.code === "23505") {
       return res.status(400).render("equipment/form", {
         title: "เพิ่มอุปกรณ์",
         item,
-        error: "รหัสอุปกรณ์นี้มีอยู่ในระบบแล้ว",
+        error: "รหัสอุปกรณ์นี้มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น",
         action: "/equipment",
       });
     }
@@ -77,10 +94,17 @@ exports.create = async (req, res, next) => {
 // แสดงฟอร์มแก้ไขอุปกรณ์
 exports.editForm = async (req, res, next) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).render("errors/error", {
+        title: "ข้อมูลไม่ถูกต้อง (400)",
+        message: "รหัสอุปกรณ์ต้องเป็นตัวเลขจำนวนเต็มเท่านั้น",
+      });
+    }
+
     const item = await Equipment.findById(req.params.id);
     if (!item) {
       return res.status(404).render("errors/error", {
-        title: "ไม่พบข้อมูล",
+        title: "ไม่พบข้อมูล (404)",
         message: "ไม่พบอุปกรณ์ที่ระบุ",
       });
     }
@@ -97,6 +121,13 @@ exports.editForm = async (req, res, next) => {
 
 // ประมวลผลการอัปเดตข้อมูลอุปกรณ์
 exports.update = async (req, res, next) => {
+  if (!isValidId(req.params.id)) {
+    return res.status(400).render("errors/error", {
+      title: "ข้อมูลไม่ถูกต้อง (400)",
+      message: "รหัสอุปกรณ์ต้องเป็นตัวเลขจำนวนเต็มเท่านั้น",
+    });
+  }
+
   const item = {
     equipment_id: req.params.id,
     code: clean(req.body.code),
@@ -118,7 +149,7 @@ exports.update = async (req, res, next) => {
     const updated = await Equipment.update(req.params.id, item);
     if (!updated) {
       return res.status(404).render("errors/error", {
-        title: "ไม่พบข้อมูล",
+        title: "ไม่พบข้อมูล (404)",
         message: "ไม่พบอุปกรณ์ที่ระบุ",
       });
     }
@@ -128,7 +159,7 @@ exports.update = async (req, res, next) => {
       return res.status(400).render("equipment/form", {
         title: "แก้ไขอุปกรณ์",
         item,
-        error: "รหัสอุปกรณ์ซ้ำกับรายการอื่น",
+        error: "รหัสอุปกรณ์ซ้ำกับรายการอื่นในระบบ",
         action: `/equipment/${req.params.id}/edit`,
       });
     }
@@ -139,6 +170,13 @@ exports.update = async (req, res, next) => {
 // ประมวลผลการลบอุปกรณ์
 exports.remove = async (req, res, next) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).render("errors/error", {
+        title: "ข้อมูลไม่ถูกต้อง (400)",
+        message: "รหัสอุปกรณ์ต้องเป็นตัวเลขจำนวนเต็มเท่านั้น",
+      });
+    }
+
     const deleted = await Equipment.remove(req.params.id);
     if (!deleted) {
       return res.status(400).render("errors/error", {
@@ -148,6 +186,7 @@ exports.remove = async (req, res, next) => {
     }
     res.redirect("/equipment");
   } catch (err) {
+    // ดักจับ Foreign Key Constraint Violation (23503)
     if (err.code === "23503") {
       return res.status(400).render("errors/error", {
         title: "ไม่สามารถลบได้",
