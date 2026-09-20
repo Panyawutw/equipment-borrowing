@@ -1,11 +1,11 @@
 // --- Database Connection ---
-const pool = require('../db/pool');
+const pool = require("../db/pool");
 
 // --- Equipment Model Methods ---
 // ดึงรายการอุปกรณ์ทั้งหมด (เรียงจากล่าสุด)
 exports.findAll = async () => {
   const { rows } = await pool.query(
-    'SELECT * FROM equipment ORDER BY equipment_id DESC'
+    "SELECT * FROM equipment ORDER BY equipment_id DESC",
   );
   return rows;
 };
@@ -13,7 +13,8 @@ exports.findAll = async () => {
 // ค้นหาอุปกรณ์ตาม ID
 exports.findById = async (id) => {
   const { rows } = await pool.query(
-    'SELECT * FROM equipment WHERE equipment_id = $1', [id]
+    "SELECT * FROM equipment WHERE equipment_id = $1",
+    [id],
   );
   return rows[0];
 };
@@ -27,10 +28,20 @@ exports.create = async ({ code, name, category }) => {
 };
 
 // แก้ไขข้อมูลอุปกรณ์
-exports.update = async (id, { code, name, category }) => {
-  const sql = `UPDATE equipment SET code=$1, name=$2, category=$3
-  WHERE equipment_id=$4 RETURNING *`;
-  const { rows } = await pool.query(sql, [code, name, category, id]);
+exports.update = async (id, { code, name, category, image_path }) => {
+  const sql = `
+    UPDATE equipment
+    SET code = $1, name = $2, category = $3, 
+    image_path = COALESCE($4, image_path)
+    WHERE equipment_id = $5 RETURNING *
+  `;
+  const { rows } = await pool.query(sql, [
+    code,
+    name,
+    category,
+    image_path,
+    id,
+  ]);
   return rows[0];
 };
 
