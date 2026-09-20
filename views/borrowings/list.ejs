@@ -1,0 +1,69 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>รายการยืม-คืนอุปกรณ์</h2>
+    <a href="/borrowings/new" class="btn btn-primary">+ ยืมอุปกรณ์</a>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-vcenter card-table">
+        <thead>
+          <tr>
+            <th>รหัสยืม</th>
+            <th>ผู้ยืม</th>
+            <th>อุปกรณ์</th>
+            <th>วันที่ยืม</th>
+            <th>กำหนดคืน</th>
+            <th>สถานะ</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (items && items.length > 0) { %>
+            <% items.forEach(item => { %>
+              <tr>
+                <td><%= item.borrowing_id %></td>
+                <td><%= item.student_name %> (<%= item.student_id %>)</td>
+                <td>[<%= item.equipment_code %>] <%= item.equipment_name %></td>
+                <td><%= new Date(item.borrowed_at).toLocaleString('th-TH') %></td>
+                <td>
+                  <%= new Date(item.due_at).toLocaleString('th-TH') %>
+                  <!-- แสดงคำว่า เกินกำหนด เมื่อเลยวันคืนและยังไม่อยู่ในสถานะคืน -->
+                  <% if (item.status === 'BORROWED' && new Date(item.due_at) < new Date()) { %>
+                    <span class="badge bg-danger ms-1">เกินกำหนด</span>
+                  <% } %>
+                </td>
+                <td>
+                  <!--  แสดง Badge สถานะ -->
+                  <% if (item.status === 'BORROWED') { %>
+                    <span class="badge bg-warning-lt">BORROWED</span>
+                  <% } else { %>
+                    <span class="badge bg-success-lt">RETURNED</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (item.status === 'BORROWED') { %>
+                    <form action="/borrowings/<%= item.borrowing_id %>/return" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('ยืนยันการคืนอุปกรณ์?')">คืนอุปกรณ์</button>
+                    </form>
+                  <% } else { %>
+                    <span class="text-muted">-</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center text-muted">ยังไม่มีรายการยืม-คืน</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
